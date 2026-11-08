@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HYBRID AUTO-PILOT — All-in-One Control Studio</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#18233b;--line:#2b3855;--text:#eef3ff;--muted:#a8b5d1;--accent:#8bb8ff;--good:#a5f3c2;--warn:#ffd48b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1000px 500px at 10% -10%,#1c2d50 0,transparent 60%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:24px 16px 18px;max-width:1200px;margin:auto}h1{font-size:clamp(25px,4vw,38px);line-height:1.1;margin:0 0 10px}h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}p{margin:7px 0;color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px;color:var(--accent);margin:3px 4px 3px 0}.wrap{max-width:1200px;margin:auto;padding:0 16px 32px}.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.card{grid-column:span 6;background:linear-gradient(160deg,var(--panel),#0f1729);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.full{grid-column:1/-1}.third{grid-column:span 4}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}label{font-weight:650;font-size:13px;color:#d8e4ff}input,select,textarea{width:100%;background:#0b1222;color:var(--text);border:1px solid #34425f;border-radius:10px;padding:11px 12px;font:inherit;min-width:0}textarea{min-height:90px;resize:vertical}input[type=file]{padding:9px}input[type=checkbox]{width:auto;accent-color:#8bb8ff}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:150px}.btn{border:1px solid #50658d;background:#223454;color:#fff;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer}.btn.primary{background:linear-gradient(120deg,#477fe0,#7856d8);border:0}.btn.ghost{background:#101a2d}.btn:active{transform:translateY(1px)}.muted{font-size:12px;color:var(--muted)}.notice{border-left:3px solid var(--warn);padding:9px 12px;background:#2a2418;border-radius:8px;color:#ffe6b8;font-size:13px}.success{border-left:3px solid var(--good);padding:9px 12px;background:#14271f;border-radius:8px;color:#c9ffdf;font-size:13px}.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:10px}.asset{background:#0b1222;border:1px solid var(--line);padding:8px;border-radius:12px;overflow:hidden}.asset img,.asset video{width:100%;max-height:220px;object-fit:contain;background:#070b14;border-radius:8px}.asset .name{font-size:12px;overflow-wrap:anywhere;margin-top:6px}.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}.check{display:flex;gap:8px;align-items:flex-start;background:#0b1222;border:1px solid var(--line);padding:9px;border-radius:9px;font-size:13px}.output{min-height:220px;font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}.status{font-size:12px;color:var(--good);min-height:18px}.divider{height:1px;background:var(--line);margin:14px 0}footer{color:var(--muted);font-size:12px;padding:15px 0 0}
+@media(max-width:760px){.card,.third{grid-column:1/-1}.wrap{padding:0 10px 25px}header{padding:20px 12px}.row>*{min-width:100%}.btn{flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <span class="pill">ONE PLACE • AUTO-PILOT</span><span class="pill">REEL + POSTER + PHOTO</span><span class="pill">PROMPT + JSON</span>
+  <h1>HYBRID AUTO-PILOT<br>All-in-One Control Studio</h1>
+  <p>पुरानी Reel/Poster जोड़ें → बदलाव चुनें → अंतिम Video, Image, Caption और JSON निर्देश तैयार करें। यह एक single-file local studio है।</p>
+</header>
+<main class="wrap">
+<div class="grid">
+<section class="card">
+<h2>1. पुरानी सामग्री जोड़ें</h2>
+<div class="field"><label for="assets">Photos, old posters, logos, video/Reel upload करें</label><input id="assets" type="file" accept="image/*,video/*" multiple></div>
+<div class="muted">फ़ाइलें आपके ब्राउज़र में ही preview होंगी। Video से sample frames निकालने के लिए नीचे बटन है। बहुत बड़ी वीडियो फ़ाइल मोबाइल/ब्राउज़र को धीमा कर सकती है।</div>
+<div class="row" style="margin-top:10px"><button class="btn" id="sampleFrames">वीडियो के sample frames निकालें</button><button class="btn ghost" id="clearAssets">Uploaded previews साफ़ करें</button></div>
+<div id="assetGrid" class="files"></div>
+<div id="assetStatus" class="status"></div>
+</section>
+
+<section class="card">
+<h2>2. Social Media links / source material</h2>
+<div class="field"><label>Instagram Reel / Post URL</label><input id="ig" type="url" placeholder="https://www.instagram.com/reel/..."></div>
+<div class="field"><label>YouTube Video / Shorts URL</label><input id="yt" type="url" placeholder="https://www.youtube.com/watch?v=..."></div>
+<div class="field"><label>Facebook Post / Reel URL</label><input id="fb" type="url" placeholder="https://www.facebook.com/..."></div>
+<div class="field"><label>अगर link का text/caption/description उपलब्ध है, यहाँ paste करें</label><textarea id="sourceText" placeholder="Video में क्या है, पुराना caption, बोले गए dialogue, poster text या transcript..."></textarea></div>
+<div class="row"><button class="btn" id="openLinks">दिए गए links खोलें</button><button class="btn ghost" id="saveSettings">Settings save करें</button></div>
+<p class="muted">केवल URL डालने से हर platform की private/login-protected सामग्री स्वतः डाउनलोड या analyse नहीं होती। बेहतर analysis के लिए अपनी फ़ाइल upload करें या उपलब्ध caption/transcript paste करें।</p>
+</section>
+
+<section class="card">
+<h2>3. AUTO topic & output settings</h2>
+<div class="row">
+<div class="field"><label>Project / Brand</label><input id="brand" value="My Project / Brand"></div>
+<div class="field"><label>मुख्य विषय</label><input id="topic" placeholder="खाली छोड़ें: AUTO detect"></div>
+</div>
+<div class="row">
+<div class="field"><label>Theme</label><select id="theme"><option value="AUTO">AUTO — सामग्री से चुनें</option><option>Education / GK</option><option>Motivation / Quotes</option><option>Emotional Story</option><option>Podcast / Dialogue</option><option>Business / Product</option><option>School / Admission</option><option>Festival / Event</option><option>Travel / Vlog</option><option>Custom</option></select></div>
+<div class="field"><label>Primary platform</label><select id="platform"><option>Instagram Reel</option><option>YouTube Shorts</option><option>YouTube Video</option><option>Facebook Reel</option><option>Multi-platform</option></select></div>
+<div class="field"><label>Aspect ratio</label><select id="ratio"><option>9:16 vertical</option><option>4:5 feed poster</option><option>1:1 square</option><option>16:9 landscape</option><option>AUTO by platform</option></select></div>
+</div>
+<div class="row">
+<div class="field"><label>कुल video duration (seconds)</label><input id="duration" type="number" min="5" max="600" value="30"></div>
+<div class="field"><label>हर clip की अवधि (seconds)</label><input id="clip" type="number" min="5" max="60" value="10"></div>
+<div class="field"><label>भाषा</label><select id="language"><option>Hindi</option><option>Hindi + English</option><option>English</option><option>Source language / AUTO</option></select></div>
+</div>
+<div class="field"><label>Voice/dialogue/script (अगर उपलब्ध हो)</label><textarea id="dialogue" placeholder="Original dialogue यहाँ paste करें। खाली हो तो system topic के आधार पर script बनाने का निर्देश देगा।"></textarea></div>
+</section>
+
+<section class="card">
+<h2>4. क्या हटाना, बदलना या जोड़ना है?</h2>
+<p>पहले विकल्प चुनें। जो जानकारी नहीं दी गई है, उसे final output में तथ्य बनाकर न गढ़ें।</p>
+<div class="checks">
+<label class="check"><input type="checkbox" id="removeOldText"> पुराने poster/video का text हटाएँ या rewrite करें</label>
+<label class="check"><input type="checkbox" id="removeOldPhoto"> पुरानी photo replace/remove करें</label>
+<label class="check"><input type="checkbox" id="removeOldLogo"> पुराना logo/watermark हटाने का निर्देश दें (केवल अपने/अधिकृत assets)</label>
+<label class="check"><input type="checkbox" id="keepIdentity" checked> Reference face/identity और जरूरी पहचान सुरक्षित रखें</label>
+<label class="check"><input type="checkbox" id="keepBrand" checked> Brand logo, रंग और contact details सुरक्षित रखें</label>
+<label class="check"><input type="checkbox" id="newHook" checked> नया strong hook/opening जोड़ें</label>
+<label class="check"><input type="checkbox" id="newCTA" checked> Call-to-action जोड़ें</label>
+<label class="check"><input type="checkbox" id="captions" checked> Speech-aligned captions/subtitles जोड़ें</label>
+<label class="check"><input type="checkbox" id="music" checked> Theme-matched music/SFX सुझाएँ</label>
+<label class="check"><input type="checkbox" id="transitions" checked> Premium hybrid transitions रखें</label>
+<label class="check"><input type="checkbox" id="thumbnail" checked> Thumbnail/cover prompt बनाएँ</label>
+<label class="check"><input type="checkbox" id="captionHashtags" checked> Caption और hashtags बनाएँ</label>
+</div>
+<div class="divider"></div>
+<div class="field"><label>क्या हटाना है? (specific list)</label><textarea id="removeList" placeholder="जैसे: पुरानी date, गलत phone number, extra logo, पुराना offer..."></textarea></div>
+<div class="field"><label>क्या नया जोड़ना है?</label><textarea id="addList" placeholder="जैसे: नया title, तारीख, offer, नई photo, contact, location..."></textarea></div>
+<div class="field"><label>क्या बिल्कुल वैसा ही रखना है?</label><textarea id="preserveList" placeholder="जैसे: original dialogue, face, logo, brand colours, product details..."></textarea></div>
+<div class="field"><label>मुझसे पूछे जाने वाले निर्णय / आपकी approval notes</label><textarea id="approvalNotes" placeholder="जिन बातों पर confirmation चाहिए, उन्हें यहाँ लिखें। Prompt में AI से unclear details पर सवाल पूछने को कहा जाएगा।"></textarea></div>
+</section>
+
+<section class="card full">
+<h2>5. Analysis checklist — AI tool के लिए निर्देश</h2>
+<div class="checks">
+<label class="check"><input type="checkbox" id="analyzeVisuals" checked> Visual composition, framing, colour, lighting</label>
+<label class="check"><input type="checkbox" id="analyzeText" checked> Visible text, spelling, layout hierarchy</label>
+<label class="check"><input type="checkbox" id="analyzeAudio" checked> Dialogue, voice, music, audio quality (यदि audio उपलब्ध हो)</label>
+<label class="check"><input type="checkbox" id="analyzePacing" checked> Scene pacing, cuts, transitions, hook/ending</label>
+<label class="check"><input type="checkbox" id="analyzeSocial" checked> Platform-specific format and CTA</label>
+<label class="check"><input type="checkbox" id="askBefore" checked> पहले बदलावों की सूची दिखाकर approval माँगे</label>
+<label class="check"><input type="checkbox" id="factsOnly" checked> Facts/phone/date/claims verify करें; missing info invent न करें</label>
+<label class="check"><input type="checkbox" id="continuity" checked> Clip-to-clip visual continuity और exact handoff</label>
+</div>
+<div class="notice" style="margin-top:12px">सीमा स्पष्ट: यह HTML prompt/JSON तैयार करता है, खुद से किसी external AI service पर video render नहीं करता। JSON schema हर video generator में समान नहीं होता; नीचे generic JSON निर्देश बनेंगे जिन्हें चुने गए tool के schema के अनुसार adjust करना पड़ सकता है।</div>
+</section>
+
+<section class="card full">
+<h2>6. Generate — सभी outputs एक जगह</h2>
+<div class="row">
+<button class="btn primary" id="generate">FINAL PROMPT + JSON तैयार करें</button>
+<button class="btn" id="copyAll">सभी outputs copy करें</button>
+<button class="btn" id="download">TXT export करें</button>
+<button class="btn ghost" id="reset">पूरा form reset</button>
+</div>
+<p id="mainStatus" class="status" aria-live="polite"></p>
+<div class="divider"></div>
+<h3>A. Change Plan & Approval Checklist</h3><textarea id="outChanges" class="output" placeholder="यहाँ KEEP / REMOVE / REPLACE / ADD / CONFIRM checklist बनेगी..." readonly></textarea><button class="btn copy" data-target="outChanges">Change Plan copy</button>
+<div class="divider"></div>
+<h3>B. Master Command Prompt</h3><textarea id="outMaster" class="output" placeholder="यहाँ final master prompt बनेगा..." readonly></textarea><button class="btn copy" data-target="outMaster">Master Prompt copy</button>
+<div class="divider"></div>
+<h3>C. Video / Reel Clip Plan</h3><textarea id="outClips" class="output" placeholder="यहाँ scene-by-scene / clip prompts बनेंगे..." readonly></textarea><button class="btn copy" data-target="outClips">Clip Plan copy</button>
+<div class="divider"></div>
+<h3>D. Poster / Thumbnail Image Prompt</h3><textarea id="outImage" class="output" placeholder="यहाँ image prompt बनेगा..." readonly></textarea><button class="btn copy" data-target="outImage">Image Prompt copy</button>
+<div class="divider"></div>
+<h3>E. Caption, Hashtags & Publishing Notes</h3><textarea id="outSocial" class="output" placeholder="यहाँ caption और publishing notes बनेंगे..." readonly></textarea><button class="btn copy" data-target="outSocial">Social output copy</button>
+<div class="divider"></div>
+<h3>F. Generic JSON Command</h3><textarea id="outJSON" class="output" placeholder="यहाँ JSON बनेगा..." readonly></textarea><button class="btn copy" data-target="outJSON">JSON copy</button>
+<footer>Local-first tool: uploaded files को server पर नहीं भेजता। Files की semantic AI analysis, OCR, speech transcription, social platform scraping और actual rendering के लिए compatible AI tool/API या अलग service चाहिए।</footer>
+</section>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let loadedFiles=[], frameData=[];
+const checkboxIds=['removeOldText','removeOldPhoto','removeOldLogo','keepIdentity','keepBrand','newHook','newCTA','captions','music','transitions','thumbnail','captionHashtags','analyzeVisuals','analyzeText','analyzeAudio','analyzePacing','analyzeSocial','askBefore','factsOnly','continuity'];
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderFiles(){
+ const grid=$('assetGrid');grid.innerHTML='';
+ loadedFiles.forEach((f,i)=>{
+  const url=URL.createObjectURL(f), div=document.createElement('div');div.className='asset';
+  const media=f.type.startsWith('image/')?`<img src="${url}" alt="">`:f.type.startsWith('video/')?`<video src="${url}" controls playsinline></video>`:`<div>Preview not available</div>`;
+  div.innerHTML=media+`<div class="name">${esc(f.name)}<br>${(f.size/1024/1024).toFixed(2)} MB</div>`;
+  grid.appendChild(div);
+ });
+ $('assetStatus').textContent=loadedFiles.length?`${loadedFiles.length} file(s) ready. File names/types are known; content interpretation requires an AI vision/video tool.`:'';
+}
+$('assets').addEventListener('change',e=>{loadedFiles=[...loadedFiles,...e.target.files];renderFiles();});
+$('clearAssets').onclick=()=>{loadedFiles=[];frameData=[];$('assetGrid').innerHTML='';$('assets').value='';$('assetStatus').textContent='Previews cleared.';};
+$('sampleFrames').onclick=async()=>{
+ const vids=loadedFiles.filter(f=>f.type.startsWith('video/'));
+ if(!vids.length){$('assetStatus').textContent='पहले कम से कम एक video upload करें।';return;}
+ const grid=$('assetGrid');$('assetStatus').textContent='Sample frames तैयार हो रहे हैं…';
+ for(const f of vids){
+  await new Promise(resolve=>{
+   const v=document.createElement('video');v.src=URL.createObjectURL(f);v.muted=true;v.playsInline=true;v.preload='metadata';
+   v.onloadedmetadata=async()=>{
+    const times=[0,Math.max(0,v.duration*.25),Math.max(0,v.duration*.5),Math.max(0,v.duration*.75)];
+    for(const t of [...new Set(times)]){
+     await new Promise(r=>{v.currentTime=t;v.onseeked=()=>r();});
+     try{const c=document.createElement('canvas');c.width=Math.min(640,v.videoWidth||640);c.height=Math.round(c.width*(v.videoHeight||360)/(v.videoWidth||640));c.getContext('2d').drawImage(v,0,0,c.width,c.height);frameData.push({name:f.name,time:t,data:c.toDataURL('image/jpeg',.72)});}catch(e){}
+    }
+    resolve();
+   };v.onerror=()=>resolve();
+  });
+ }
+ frameData.forEach(fr=>{const d=document.createElement('div');d.className='asset';d.innerHTML=`<img src="${fr.data}" alt="sample frame"><div class="name">${esc(fr.name)} • ${fr.time.toFixed(1)}s sample frame</div>`;grid.appendChild(d);});
+ $('assetStatus').textContent=`${frameData.length} sample frames बनाए। ये preview हैं; text/object पहचानने के लिए vision-capable AI tool में frames attach करें।`;
+};
+$('openLinks').onclick=()=>{
+ const urls=[$('ig').value.trim(),$('yt').value.trim(),$('fb').value.trim()].filter(Boolean);
+ urls.forEach(u=>{try{const x=new URL(u);if(['http:','https:'].includes(x.protocol))window.open(x.href,'_blank','noopener');}catch(e){}});
+ if(!urls.length)$('mainStatus').textContent='पहले valid social URL डालें।';
+};
+const settingIds=['brand','topic','theme','platform','ratio','duration','clip','language','dialogue','ig','yt','fb','sourceText','removeList','addList','preserveList','approvalNotes',...checkboxIds];
+$('saveSettings').onclick=()=>{const obj={};settingIds.forEach(id=>obj[id]=($(id).type==='checkbox')?$(id).checked:$(id).value);localStorage.setItem('hybridAutopilotStudio',JSON.stringify(obj));$('mainStatus').textContent='Settings इसी browser में save हो गईं।';};
+try{const saved=JSON.parse(localStorage.getItem('hybridAutopilotStudio')||'{}');Object.entries(saved).forEach(([id,v])=>{if($(id)){if($(id).type==='checkbox')$(id).checked=!!v;else $(id).value=v;}})}catch(e){}
+function val(id){return $(id).value.trim();}
+function checked(id){return $(id).checked;}
+function build(){
+ const files=loadedFiles.map(f=>({name:f.name,type:f.type||'unknown',size_bytes:f.size}));
+ const opts={
+  remove_old_text:checked('removeOldText'),remove_or_replace_old_photo:checked('removeOldPhoto'),remove_or_replace_old_logo_authorized_assets_only:checked('removeOldLogo'),
+  preserve_reference_identity:checked('keepIdentity'),preserve_brand_details:checked('keepBrand'),add_hook:checked('newHook'),add_cta:checked('newCTA'),
+  captions:checked('captions'),music_sfx:checked('music'),premium_transitions:checked('transitions'),thumbnail:checked('thumbnail'),caption_hashtags:checked('captionHashtags'),
+  analyze_visuals:checked('analyzeVisuals'),analyze_text:checked('analyzeText'),analyze_audio_if_available:checked('analyzeAudio'),analyze_pacing:checked('analyzePacing'),platform_adaptation:checked('analyzeSocial'),
+  ask_before_changes:checked('askBefore'),verify_facts_and_never_invent:checked('factsOnly'),clip_continuity:checked('continuity')
+ };
+ const meta={project:val('brand')||'Unspecified project',topic:val('topic')||'AUTO-DETECT FROM PROVIDED MATERIAL',theme:$('theme').value,platform:$('platform').value,aspect_ratio:$('ratio').value,total_duration_seconds:+val('duration')||30,clip_duration_seconds:+val('clip')||10,language:$('language').value,uploaded_files:files,social_urls:{instagram:val('ig'),youtube:val('yt'),facebook:val('fb')},source_text_or_transcript:val('sourceText'),original_dialogue:val('dialogue'),remove_or_change:val('removeList'),add_new:val('addList'),must_preserve:val('preserveList'),approval_notes:val('approvalNotes'),options:opts};
+ const changePlan=`CHANGE PLAN — REVIEW BEFORE FINAL GENERATION\n\nPROJECT: ${meta.project}\nTOPIC: ${meta.topic}\n\nKEEP / PRESERVE\n- ${meta.must_preserve||'Preserve confirmed facts, brand identity and genuine reference identity where appropriate.'}\n- Keep identity: ${opts.preserve_reference_identity?'YES':'NOT LOCKED'}\n- Keep brand details: ${opts.preserve_brand_details?'YES':'NOT LOCKED'}\n\nREMOVE / CHANGE\n- ${meta.remove_or_change||'No specific removals listed; ask AI to recommend changes, not assume permission.'}\n- Remove/rewrite old text: ${opts.remove_old_text?'YES':'NO'}\n- Replace/remove old photo: ${opts.remove_or_replace_old_photo?'YES':'NO'}\n- Logo/watermark changes: ${opts.remove_or_replace_old_logo_authorized_assets_only?'YES — authorized assets only':'NO'}\n\nADD\n- ${meta.add_new||'No specific additions listed; suggest options for approval.'}\n- Hook: ${opts.add_hook?'YES':'NO'}; CTA: ${opts.add_cta?'YES':'NO'}; Captions: ${opts.captions?'YES':'NO'}; Music/SFX: ${opts.music_sfx?'YES':'NO'}; Transitions: ${opts.premium_transitions?'YES':'NO'}; Thumbnail: ${opts.thumbnail?'YES':'NO'}; Caption/hashtags: ${opts.caption_hashtags?'YES':'NO'}\n\nUSER CONFIRMATION NEEDED\n- ${meta.approval_notes||'Confirm any uncertain text, dates, offers, contact details, identity edits, removals or rights/permissions before finalizing.'}\n- Missing facts must be marked [CONFIRM], never invented.\n- If reference files cannot be inspected by the selected AI tool, request accessible uploads/screenshots/transcript.\n\nNEXT ACTION: Review this checklist. Approve or edit it before sending the final master prompt to a compatible AI tool.`;
+ const master=`HYBRID AUTO-PILOT — MASTER COMMAND\n\nROLE: Act as a careful creative director, video editor, poster designer, social content strategist and prompt engineer. Use only the attached/reference assets and supplied source text as evidence.\n\nPROJECT: ${meta.project}\nTOPIC: ${meta.topic}\nTHEME: ${meta.theme}\nPLATFORM: ${meta.platform}\nASPECT RATIO: ${meta.aspect_ratio}\nTOTAL DURATION: ${meta.total_duration_seconds}s; TARGET CLIP LENGTH: ${meta.clip_duration_seconds}s\nLANGUAGE: ${meta.language}\n\nREFERENCE ASSETS: ${files.length?files.map(f=>`- ${f.name} (${f.type}, ${(f.size_bytes/1024/1024).toFixed(2)} MB)`).join('\n'):'No files attached yet'}\nSOCIAL URLS: Instagram=${meta.social_urls.instagram||'not provided'}; YouTube=${meta.social_urls.youtube||'not provided'}; Facebook=${meta.social_urls.facebook||'not provided'}\nSOURCE TEXT/TRANSCRIPT:\n${meta.source_text_or_transcript||'[Not supplied; inspect attached assets if the connected tool supports vision/video/audio analysis.]'}\nORIGINAL DIALOGUE:\n${meta.original_dialogue||'[Not supplied; propose a script only after identifying the topic and clearly label it as a draft.]'}\n\nCHANGE REQUEST\nREMOVE/CHANGE: ${meta.remove_or_change||'Review old assets and recommend only clearly useful changes.'}\nADD: ${meta.add_new||'Suggest relevant additions, but ask user before treating them as confirmed facts.'}\nMUST PRESERVE: ${meta.must_preserve||'Preserve accurate brand identity, genuine faces, factual content, and any explicitly protected elements.'}\nAPPROVAL NOTES: ${meta.approval_notes||'If a decision is ambiguous or affects identity, brand, factual claims, contact details or removal, ask the user before finalizing.'}\n\nWORKFLOW (FOLLOW IN ORDER):\n1. Inventory every supplied file and source. Separate observed facts from assumptions. If you cannot access a social link, say so and request an upload, screenshot, caption or transcript; do not pretend the link was analysed.\n2. Analyse original reel/poster: visible text, spelling, hierarchy, subject, composition, colour, lighting, duration, pacing, transitions, audio/dialogue when actually accessible, strengths and weaknesses.\n3. Create a change table: KEEP / REMOVE / REPLACE / ADD / NEED USER CONFIRMATION. ${opts.ask_before_changes?'STOP and ask user to approve unclear or consequential changes before final generation.':'Proceed only with explicit user instructions; flag unresolved assumptions.'}\n4. Apply the selected theme and platform specifications. Do not invent names, dates, offers, prices, addresses, phone numbers, achievements or claims. Mark missing details as [CONFIRM].\n5. Produce a production-ready master video prompt, scene-by-scene clip prompts with continuity locks, poster/thumbnail prompt, social caption/hashtags and a generic JSON object. Match the requested duration; keep clip timings coherent and make each clip start from the previous clip’s final visual state when continuity is enabled.\n6. For captions, request speech-aligned timing and readable Hindi typography; never claim perfect word-level sync unless verified by the target tool.\n7. Preserve original identity/face and brand assets when selected. Only remove watermarks/logos if user owns them or has permission; do not remove third-party ownership marks.\n8. Output sections separately: A Analysis, B Change Approval List, C Master Video Prompt, D Clip Prompts, E Image Prompt, F Caption/Hashtags, G JSON, H Remaining Questions.\n\nOPTIONS: ${Object.entries(opts).filter(([k,v])=>v===true).map(([k])=>k).join(', ')||'none'}\n\nDELIVERABLE QUALITY: clear, realistic, platform-appropriate, high production value, consistent subject/wardrobe/props/location, natural motion, clean typography, no unintended text/logo distortions, no invented facts, and no claims that an action/render occurred unless it actually did.`;
+ const dur=meta.total_duration_seconds, clip=Math.max(1,meta.clip_duration_seconds), n=Math.ceil(dur/clip);
+ let clipText=`CLIP PLAN — ${n} clip(s), target total ${dur}s\n`;
+ for(let i=0;i<n;i++){const start=i*clip,end=Math.min(dur,(i+1)*clip);clipText+=`\nCLIP ${i+1}/${n} | ${start}-${end}s | ${meta.aspect_ratio}\nPurpose: ${i===0?'Immediate hook + establish subject/topic':i===n-1?'Payoff + clear ending + CTA':'Develop story/information with visual progression'}\nVisual: Derive from reference assets and approved additions; avoid unsupported specifics.\nCamera/motion: purposeful cinematic movement, natural motion, stable subject identity.\nAudio/dialogue: ${meta.original_dialogue||'Use approved source dialogue or propose a clearly labeled draft.'}\nText/captions: ${opts.captions?'Readable, correctly spelled, speech-aligned where supported.':'No added captions unless source requires them.'}\nTransition: ${opts.premium_transitions?'Hybrid premium transition, motivated by action; avoid excessive effects.':'Simple clean transition.'}\nContinuity: ${opts.clip_continuity?'Clip starts from prior clip end pose, camera direction, lighting, wardrobe and scene state.':'Maintain basic visual consistency.'}\n`; }
+ const imagePrompt=`IMAGE / POSTER / THUMBNAIL PROMPT\nCreate a polished ${meta.aspect_ratio} creative for ${meta.project}. Topic: ${meta.topic}. Theme: ${meta.theme}. Platform: ${meta.platform}.\nReference treatment: inspect attached old poster/photos; identify what to preserve, remove, replace and add. Requested removals: ${meta.remove_or_change||'recommend only'}\nRequested additions: ${meta.add_new||'suggest, label unconfirmed items'}\nPreserve: ${meta.must_preserve||'accurate identity and brand details'}\nDesign: strong visual hierarchy, one clear headline, readable text, balanced negative space, clean edges, professional lighting and intentional palette. Keep text exact; do not fabricate logos, phone numbers, dates, offers or claims. If any detail is unknown, use [CONFIRM] or leave it out. ${opts.thumbnail?'Optimize for a strong thumbnail/cover hook.':''}`;
+ const social=`SOCIAL PUBLISHING PACK\nPlatform: ${meta.platform}\nCaption language: ${meta.language}\nTopic: ${meta.topic}\nDraft caption: [Generate from confirmed content only; keep claims faithful to source.]\nHashtags: [Generate relevant, non-spammy hashtags after topic confirmation.]\nCTA: ${opts.add_cta?'Include a clear, appropriate call-to-action.':'No extra CTA unless requested.'}\nCover/thumbnail: ${opts.thumbnail?'Prepare separate cover prompt.':'Not requested.'}\nPublishing checklist: verify names, dates, phone/contact, spelling, permissions for photos/music, aspect ratio, subtitles, safe margins, cover crop and final preview before publishing.\nNote: Do not imply the post was uploaded or scheduled automatically.`;
+ const json={schema_name:'generic_hybrid_autopilot_command',schema_version:'1.0',project:meta,change_options:opts,workflow:['inventory_and_analyze','separate_observed_facts_from_assumptions','propose_keep_remove_replace_add_confirm_table','request_approval_for_ambiguous_changes','generate_video_clip_plan','generate_poster_thumbnail_prompt','generate_caption_hashtags','validate_json_and_output'],deliverables:{analysis:true,approval_checklist:true,master_video_prompt:true,clip_plan:true,image_prompt:true,social_caption_hashtags:true,remaining_questions:true},constraints:{never_invent_facts:true,ask_before_unclear_removal:true,access_to_social_urls_not_guaranteed:true,actual_rendering_not_performed_by_this_html:true,watermark_removal_only_with_permission:true}};
+ $('outChanges').value=changePlan;$('outMaster').value=master;$('outClips').value=clipText;$('outImage').value=imagePrompt;$('outSocial').value=social;$('outJSON').value=JSON.stringify(json,null,2);
+ $('mainStatus').textContent='Outputs तैयार हैं। Attachments की वास्तविक AI analysis के लिए files/frames को vision-capable AI tool में भेजें; यह page prompts और generic JSON बनाता है।';
+}
+$('generate').onclick=build;
+document.querySelectorAll('.copy').forEach(b=>b.onclick=async()=>{const t=$(b.dataset.target);try{await navigator.clipboard.writeText(t.value);$('mainStatus').textContent='Copied: '+b.textContent;}catch(e){t.select();document.execCommand('copy');$('mainStatus').textContent='Copy attempted: '+b.textContent;}});
+$('copyAll').onclick=async()=>{const all=[['CHANGE PLAN',val('outChanges')],['MASTER',val('outMaster')],['CLIPS',val('outClips')],['IMAGE',val('outImage')],['SOCIAL',val('outSocial')],['JSON',val('outJSON')]].map(x=>x[0]+'\n'+x[1]).join('\n\n====================\n\n');try{await navigator.clipboard.writeText(all);$('mainStatus').textContent='सभी outputs copied.';}catch(e){$('outMaster').value=all;$('outMaster').select();document.execCommand('copy');$('mainStatus').textContent='Combined output Master box में रखकर copy किया गया।';}};
+$('download').onclick=()=>{const all='CHANGE PLAN\n'+val('outChanges')+'\n\nMASTER PROMPT\n'+val('outMaster')+'\n\nCLIP PLAN\n'+val('outClips')+'\n\nIMAGE PROMPT\n'+val('outImage')+'\n\nSOCIAL PACK\n'+val('outSocial')+'\n\nJSON\n'+val('outJSON');const blob=new Blob([all],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hybrid-autopilot-final-output.txt';a.click();URL.revokeObjectURL(a.href);};
+$('reset').onclick=()=>{if(!confirm('सभी form fields reset करें?'))return;document.querySelectorAll('input:not([type=file]),textarea').forEach(e=>{if(e.type==='checkbox')e.checked=['keepIdentity','keepBrand','newHook','newCTA','captions','music','transitions','thumbnail','captionHashtags','analyzeVisuals','analyzeText','analyzeAudio','analyzePacing','analyzeSocial','askBefore','factsOnly','continuity'].includes(e.id);else e.value='';});$('brand').value='My Project / Brand';$('duration').value=30;$('clip').value=10;$('theme').value='AUTO';$('platform').selectedIndex=0;$('ratio').selectedIndex=0;$('language').selectedIndex=0;loadedFiles=[];frameData=[];$('assets').value='';$('assetGrid').innerHTML='';['outChanges','outMaster','outClips','outImage','outSocial','outJSON'].forEach(id=>$(id).value='');$('mainStatus').textContent='Form reset.';};
+</script>
+</body></html>
